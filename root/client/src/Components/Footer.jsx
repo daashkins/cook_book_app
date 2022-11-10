@@ -12,10 +12,6 @@ function Footer() {
         <Toolbar>
         <Typography>
         </Typography>  
-          <IconButton color="inherit" aria-label="open drawer">
-            <MenuIcon />
-          </IconButton>
-          <Box sx={{ flexGrow: 1 }} />
         </Toolbar>
       </AppBar>
     </div>

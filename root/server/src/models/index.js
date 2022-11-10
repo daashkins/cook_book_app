@@ -1,15 +1,22 @@
 import dbConnect from "../mongo/index.js";
 import { v4 as uuidv4 } from 'uuid';
+import { DateTime } from 'luxon';
+import fetchData from "../external_api/index.js";
 
 const generateCartId = () => uuidv4();
 
 const createNewRecipe = async (newRecipe) => {
     const db = await dbConnect();
+    console.log(fetchData);
+    const image = await fetchData(newRecipe.title);
     const recipe = {
-        recipeID : generateCartId(),
+        recipeId: generateCartId(),
+        image : image,
+        time: DateTime.now().toFormat('MM-dd-yyyy'),
         title: newRecipe.title, 
-        ingredients: [...newRecipe.ingredients],
-        insctructions: newRecipe.insctructions,
+        category: newRecipe.category,
+        ingredients: newRecipe.ingredients,
+        instructions: newRecipe.instructions,
         likes : 0
       }
   const result = await db.insertOne(recipe);
@@ -22,12 +29,28 @@ const createNewRecipe = async (newRecipe) => {
     return await db.find().toArray();
   };
   
-//   const updateCart = async cart => {};
-//   const deleteCart = async cartId => {};
+  const updateRecipeRating = async (recipeId, recipeRating) => {
+    const db = await dbConnect();
+    if(db.findOne({ recipeId: recipeId })) {
+      db.updateOne({recipeId: recipeId}, {$set:{rating: recipeRating}});
+      return await db.findOne({ recipeId: recipeId });
+    } else {
+      throw new Error("Id was not found")
+    }
+  }
 
-
-export { createNewRecipe, getRecipes,
-    // updateCart,
-    // deleteCart,
+  const deleteRecipe = async (recipeId) => {
+    const db = await dbConnect();
+    const recipe = await db.findOne({ recipeId: recipeId })
+    if(recipe.recipeId === recipeId) {
+        await db.deleteOne( { recipeId: recipeId })
+        console.log( "Recipe deleted");
+        return
+    } else {
+      throw new Error("Id was not found")
+    }
   };
+
+
+export { createNewRecipe, getRecipes, deleteRecipe,updateRecipeRating };
   
