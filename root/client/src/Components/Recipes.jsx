@@ -58,7 +58,7 @@ function Recipes() {
       headers: {"Content-Type": 'application/json'},
   })
   .then(response =>response.json())
-  .then(data => setRecipes(data));
+  .then(data => setRecipes(data)); 
   } );
     
   };
