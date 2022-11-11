@@ -6,23 +6,20 @@ import reportWebVitals from './reportWebVitals';
 import Header from './Components/Header';
 import Recipes from './Components/Recipes';
 import NotFoundPage from './Components/NotFoundPage';
-import Footer from './Components/Footer';
 import CreateRecipe from './Components/CreateRecipe';
-import { BrowserRouter, Link, Routes, Route} from "react-router-dom";
+import { BrowserRouter, Routes, Route} from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <React.StrictMode>
       <Header/>
-      <hr />
       <Routes>
           <Route path="/" element={ <App/>}></Route>
           <Route path="/recipes" element={<Recipes />}></Route>
           <Route path="/create_recipe" element={ <CreateRecipe/>}></Route>
           <Route path="*" element={ <NotFoundPage/>}></Route>
         </Routes>
-      <Footer />
     </React.StrictMode>
     
   </BrowserRouter>
