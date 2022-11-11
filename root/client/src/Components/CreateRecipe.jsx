@@ -7,8 +7,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect  } from 'react';
+import { useNavigate} from "react-router-dom";
 
 const validate = (data) => {
   if( data.title && data.category && data.instructions && data.ingredients.length >= 1 ) {
@@ -23,6 +23,12 @@ const [instructions, setInstructions] = useState('');
 
 const [newRecipe, setNewRecipe] = useState({});
 
+const navigate = useNavigate();
+
+const delayAndGo = (e, path) => {
+  e.preventDefault();
+  setTimeout(() => navigate(path, 1000));
+}
 const handleChangeCategory = (e) => {
     setCategory(e.target.value);
 };
@@ -46,7 +52,6 @@ const handleCreateNewRecipe =  (e) => {
         ingredients: [...ingredients],
         instructions: instructions
     };
-    
     setNewRecipe(newRecipe => ({
         ...newRecipe,
         ...obj
@@ -67,8 +72,9 @@ useEffect(() => {
         body: JSON.stringify(newRecipe),
     })
     .then(response => {
-        console.log(response);
-        response.json()})
+        console.log(response.ok);
+        // response.json()
+      })
     }
   },[newRecipe])
 
@@ -76,10 +82,11 @@ useEffect(() => {
   return (
     <Box
     component="form"
-    sx={{'& > :not(style)': { m: 1, width: '100ch' },}}
+    sx={{'& > :not(style)': { m: 1, width: '95%' },}}
     noValidate
     autoComplete="off"
-    onSubmit={(e)=> handleCreateNewRecipe(e)}
+    onSubmit={(e)=> {handleCreateNewRecipe(e); delayAndGo(e, "/recipes")}}
+    id="recipe_form"
   >
     <TextField id="outlined-basic" type="text" value={title} required label="Title" variant="outlined" onChange={(e) => setTitle(e.target.value)}/>
     <InputLabel id="demo-simple-select-label">Category</InputLabel>
@@ -97,19 +104,18 @@ useEffect(() => {
         </Select>
     {ingredients.map((item, index) => {
         return (
-        <div key={index}>
+        <div key={index} className="infredients_container">
         <TextField id={"name"+index} type="text"label="Ingredient" name="name"  value={item.name || ''} variant="outlined" required onChange={(e) => handleIngredientsChange(index, e)} />
         <TextField id={"quantity"+index} label="Quantity" name="quantity" value={item.quantity || ''}  variant="outlined" required onChange={(e) => handleIngredientsChange(index, e)}/>
-        <Button variant="outlined" startIcon={<DeleteIcon/>} onClick={() => removeIngredients(index)} />
+        <Button className="add_ingredient" variant="outlined" onClick={() => removeIngredients(index)}><DeleteIcon sx={{ fontSize: "40px", color: "#ff00008a"} }></DeleteIcon></Button>
         </div>
      )
     })}
     
 
-    <Button variant="contained" onClick={() => setIngredients([...ingredients, { name: '', amount: '' }])}>Add ingredient</Button>
+    <Button variant="contained" style={{backgroundColor: "rgb(91 150 147)"}}  onClick={() => setIngredients([...ingredients, { name: '', amount: '' }])}>Add ingredient</Button>
     <TextField id="outlined-basic" type="text" value={instructions} required label="Instructions" variant="outlined" onChange={(e) => setInstructions(e.target.value)} />
-
-    <Button variant="contained" type="submit" label="Create recipe" >Create recipe</Button>
+    <Button variant="contained" type="submit" style={{backgroundColor: "rgb(91 150 147)"}}  label="Create recipe" >Create recipe</Button>
   </Box>
   )
 }

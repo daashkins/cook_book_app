@@ -17,7 +17,7 @@ const createNewRecipe = async (newRecipe) => {
         category: newRecipe.category,
         ingredients: newRecipe.ingredients,
         instructions: newRecipe.instructions,
-        likes : 0
+        rating : 0
       }
   const result = await db.insertOne(recipe);
   return await db.findOne({ _id: result.insertedId });
@@ -31,7 +31,8 @@ const createNewRecipe = async (newRecipe) => {
   
   const updateRecipeRating = async (recipeId, recipeRating) => {
     const db = await dbConnect();
-    if(db.findOne({ recipeId: recipeId })) {
+    const recipe = await db.findOne({ recipeId: recipeId })
+    if(recipe.recipeId === recipeId) {
       db.updateOne({recipeId: recipeId}, {$set:{rating: recipeRating}});
       return await db.findOne({ recipeId: recipeId });
     } else {
@@ -44,7 +45,6 @@ const createNewRecipe = async (newRecipe) => {
     const recipe = await db.findOne({ recipeId: recipeId })
     if(recipe.recipeId === recipeId) {
         await db.deleteOne( { recipeId: recipeId })
-        console.log( "Recipe deleted");
         return
     } else {
       throw new Error("Id was not found")
